@@ -84,8 +84,6 @@ jobs:
       - save_cache:
           paths: [frontend/node_modules]
           key: frontend-build
-      - slack/notify:
-          event: always
                 
   test-backend:
     docker:
@@ -103,9 +101,6 @@ jobs:
       - save_cache:
           paths: [backend/node_modules]
           key: backend-build
-      - slack/notify:
-          channel: 03-cloud-devops
-          event: always
             
   scan-frontend:
     docker:
