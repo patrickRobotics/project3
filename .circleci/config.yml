@@ -67,13 +67,13 @@ jobs:
           paths: [backend/node_modules]
           key: backend-build
 
-  # test-frontend:
-    # docker:
-      # Docker image here
-    # steps:
-      # Checkout code from git
-      # Restore from cache
-      # Your job code here
+  test-frontend:
+    docker:
+      Docker image here
+    steps:
+      cd frontend
+      npm install
+      npm run test
                 
   # test-backend:
     # docker:
@@ -270,8 +270,8 @@ workflows:
     jobs:
       - build-frontend
       - build-backend
-      # - test-frontend:
-      #     requires: [build-frontend]
+      - test-frontend:
+          requires: [build-frontend]
       # - test-backend:
       #     requires: [build-backend]
       # - scan-backend:
