@@ -50,13 +50,31 @@ commands:
             unzip awscliv2.zip
             sudo ./aws/install
 
-  install_ansible:
-    description: Install Ansible
+  install_python_based_ansible:
+    description: Install Ansible on a Python image
     steps:
       - run:
           name: Install Ansible
           command: |
             python3 -m pip install --user ansible
+  
+  install_node:
+    description: Install Node.js
+    steps:
+      - run:
+          name: Install Node
+          command: |
+            curl -fsSL https://deb.nodesource.com/setup_lts.x | sudo -E bash -
+            sudo apt install -y nodejs
+            sudo npm install --global n
+            sudo n 13.8.0
+
+  install_ansible:
+    sudo apt update
+    sudo apt install software-properties-common -y
+    sudo add-apt-repository --yes --update ppa:ansible/ansible
+    sudo apt install ansible -y
+
             
 jobs:
   build-frontend:
@@ -204,7 +222,7 @@ jobs:
     steps:
       - checkout
       - install_awscli
-      - install_ansible
+      - install_python_based_ansible
       - add_ssh_keys:
           fingerprints: ["c1:a0:2d:dc:64:8f:73:6f:a0:c4:60:16:d3:d5:d1:77"]
       - attach_workspace:
@@ -242,10 +260,11 @@ jobs:
 
   deploy-frontend:
     docker:
-      - image: cimg/node:13.8.0
+      - image: cimg/base:table
     steps:
       - checkout
       - install_awscli
+      - install_node
       - install_ansible
       - add_ssh_keys:
           fingerprints: ["c1:a0:2d:dc:64:8f:73:6f:a0:c4:60:16:d3:d5:d1:77"]
@@ -275,10 +294,11 @@ jobs:
                     
   deploy-backend:
     docker:
-      - image: cimg/node:13.8.0
+      - image: cimg/base:table
     steps:
       - checkout
       - install_awscli
+      - install_node
       - install_ansible
       - add_ssh_keys:
           fingerprints: ["c1:a0:2d:dc:64:8f:73:6f:a0:c4:60:16:d3:d5:d1:77"]
