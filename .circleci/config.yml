@@ -270,27 +270,42 @@ jobs:
             npm run build
             tar -czvf artifact-"${CIRCLE_WORKFLOW_ID:0:7}".tar.gz dist
             aws s3 cp dist s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7} --recursive 
-      - destroy-environment:
-          workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
-      - revert_migration:
-          workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}   
+      - destroy-environment
+      - revert_migration
                     
-  # deploy-backend:
-    # docker:
-      # Docker image here that supports Ansible
-    # steps:
-      # Checkout code from git
-      # Add ssh keys with fingerprint
-      # attach workspace
-      # - run:
-      #     name: Install dependencies
-      #     command: |
-      #       # your code here
-      # - run:
-      #     name: Deploy backend
-      #     command: |
-      #       # your code here
-      # Here's where you will add some code to rollback on failure  
+  deploy-backend:
+    docker:
+      - image: cimg/python:3.10
+    steps:
+      - checkout
+      - install_awscli
+      - install_ansible
+      - add_ssh_keys:
+          fingerprints: ["c1:a0:2d:dc:64:8f:73:6f:a0:c4:60:16:d3:d5:d1:77"]
+      - attach_workspace:
+          at: ~/
+      - run:
+          name: Install dependencies
+          command: |
+            cd backend
+            npm  i 
+      - run:
+          name: Deploy backend
+          command: |
+            cd backend
+            npm run build 
+            tar -czf artifact.tar.gz dist/* package*
+            cd ..
+            cp backend/artifact.tar.gz .circleci/ansible/roles/deploy/files
+
+            # export env var 
+            export TYPEORM_MIGRATIONS_DIR=./migrations 
+            export TYPEORM_ENTITIES=./modules/domain/**/*.entity{.ts,.js}
+            export TYPEORM_MIGRATIONS=./migrations/*.ts
+            cd .circleci/ansible
+            ansible-playbook -i inventory.txt deploy-backend.yml
+      - destroy-environment
+      - revert_migration
 
   # smoke-test:
     # docker:
