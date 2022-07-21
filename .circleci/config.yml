@@ -349,16 +349,16 @@ jobs:
       - run:
           name: Backend smoke test.
           command: |
-              # Fetch and prepare the BACKEND_PUBLIC_IP env var
-              export API_URL="http://${BACKEND_PUBLIC_IP}:3030"
-              echo "${BACKEND_PUBLIC_IP}"
-              echo "${API_URL}"
-              if curl "${API_URL}/api/status" | grep "ok"
-              then
-                  return 0
-              else
-                  return 1
-              fi
+            # Fetch and prepare the BACKEND_PUBLIC_IP env var
+            export API_URL="http://${BACKEND_PUBLIC_IP}:3030"
+            echo "${BACKEND_PUBLIC_IP}"
+            echo "${API_URL}"
+            if curl "${API_URL}/api/status" | grep "ok"
+            then
+                return 0
+            else
+                return 1
+            fi
       - run:
           name: Frontend smoke test.
           command: |
@@ -372,19 +372,19 @@ jobs:
             fi
 
   # cloudfront-update:
-    # docker:
-      # Docker image here that supports AWS CLI
-    # steps:
-      # Checkout code from git
-      # - run:
-      #     name: Install dependencies
-      #     command: |
-      #       # your code here
-      # - run:
-      #     name: Update cloudfront distribution
-      #     command: |
-      #       # your code here
-      # Here's where you will add some code to rollback on failure  
+  #   docker:
+  #     - image: amazon/aws-cli
+  #   steps:
+  #     - checkout
+  #     - run:
+  #         name: Install dependencies
+  #         command: |
+  #           # your code here
+  #     - run:
+  #         name: Update cloudfront distribution
+  #         command: |
+  #           # your code here
+  #     Here's where you will add some code to rollback on failure  
 
   # cleanup:
   #     docker:
