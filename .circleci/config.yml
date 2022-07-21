@@ -271,7 +271,7 @@ jobs:
             tar -czvf artifact-"${CIRCLE_WORKFLOW_ID:0:7}".tar.gz dist
             aws s3 cp dist s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7} --recursive 
       - destroy-environment
-      - revert_migrations
+      - revert-migrations
                     
   deploy-backend:
     docker:
@@ -305,7 +305,7 @@ jobs:
             cd .circleci/ansible
             ansible-playbook -i inventory.txt deploy-backend.yml
       - destroy-environment
-      - revert_migration
+      - revert-migrations
 
   # smoke-test:
     # docker:
