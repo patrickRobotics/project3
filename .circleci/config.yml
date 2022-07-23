@@ -50,14 +50,6 @@ commands:
             unzip awscliv2.zip
             sudo ./aws/install
 
-  install_python_based_ansible:
-    description: Install Ansible on a Python image
-    steps:
-      - run:
-          name: Install Ansible
-          command: |
-            python3 -m pip install --user ansible
-  
   install_node:
     description: Install Node.js
     steps:
@@ -437,7 +429,6 @@ jobs:
               aws cloudformation delete-stack --stack-name "udapeople-frontend-${OldWorkflowID}"
             fi
             
-
 workflows:
   default:
     jobs:
