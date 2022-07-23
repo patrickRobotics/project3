@@ -313,7 +313,7 @@ jobs:
       - checkout
       - add_ssh_keys:
           fingerprints:
-            - 'c1:a0:2d:dc:64:8f:73:6f:a0:c4:60:16:d3:d5:d1:77'
+            - 'ab:52:25:68:df:4c:3a:d5:48:18:55:d8:f9:3b:df:de'
       - run:
           name: Install dependencies
           command: |
@@ -335,8 +335,10 @@ jobs:
             cd .circleci/ansible
             echo "Contents of the inventory.txt file is ------$(cat inventory.txt)"
             ansible-playbook -i inventory.txt deploy-backend.yml
-      - destroy-environment
-      - revert-migrations
+      - destroy-environment:
+          workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
+      - revert-migrations:
+          workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
 
   smoke-test:
     docker:
