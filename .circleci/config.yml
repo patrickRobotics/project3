@@ -249,6 +249,10 @@ jobs:
       - image: cimg/node:13.8.0
     steps:
       - checkout
+      - restore_cache:
+          keys: [backend-build]
+      - attach_workspace:
+          at: ~/
       - run:
           name: Run migrations
           command: |
