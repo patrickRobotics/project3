@@ -168,7 +168,7 @@ jobs:
       - run:
           name: Run back-end vulnerability scan
           command: |
-            cd backend
+            cd frontend
             npm install
             npm audit fix --audit-level=critical --force
             npm audit fix --audit-level=critical --force
