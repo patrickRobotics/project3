@@ -1,6 +1,6 @@
 version: 2.1
 orbs:
-  slack: circleci/slack@4.10.1
+  slack: circleci/slack@4.1
 
 parameters:
   workflow_id:
@@ -33,15 +33,10 @@ commands:
           name: Revert migrations
           when: on_fail
           command: |
-            SUCCESS=$(curl --insecure  https://kvdb.io/B4kJTq1riohKqpnN89rdDZ/migration_<< parameters.workflow_id >>)
-            # Logic for reverting the database state
-            if (( $SUCCESS == 1 ));
-            then
-              cd ~/project/backend
-              npm install
-              npm run migration:revert
-            fi
-
+            cd ~/project/backend
+            npm install
+            npm run build
+            npm run migrations:revert
 jobs:
   build-frontend:
     docker:
@@ -49,7 +44,7 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          keys: [backend-build]
+          keys: [frontend-build]
       - run:
           name: Build front-end
           command: |
@@ -85,7 +80,7 @@ jobs:
       - restore_cache:
           keys: [frontend-build]
       - run:
-          name: Run front-end tests
+          name: Run frontend test
           command: |
             cd frontend
             npm install
@@ -99,7 +94,7 @@ jobs:
       - restore_cache:
           keys: [backend-build]
       - run:
-          name: Run back-end tests
+          name: Run backend test
           command: |
             cd backend
             npm install
@@ -113,14 +108,14 @@ jobs:
       - restore_cache:
           keys: [frontend-build]
       - run:
-          name: Run front-end vulnerability scan
+          name: Analyse frontend
           command: |
             cd frontend
             npm install
             npm audit fix --audit-level=critical --force
             npm audit fix --audit-level=critical --force
             npm audit --audit-level=critical
-  
+
   scan-backend:
     docker:
       - image: circleci/node:13.8.0
@@ -129,7 +124,7 @@ jobs:
       - restore_cache:
           keys: [backend-build]
       - run:
-          name: Run back-end vulnerability scan
+          name: Analyse backend
           command: |
             cd frontend
             npm install
@@ -166,7 +161,6 @@ jobs:
             --query 'Reservations[*].Instances[*].PublicIpAddress' \
             --filters Name=tag:aws:cloudformation:stack-name,Values=udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7} \
             --output text) >> ~/project/.circleci/ansible/inventory.txt
-            cat .circleci/ansible/inventory.txt
       - persist_to_workspace:
           root: ~/
           paths:
@@ -217,6 +211,13 @@ jobs:
       - image: circleci/node:13.8.0
     steps:
       - checkout
+      - run:
+          name: Install dependencies
+          command: |
+            sudo apt install -y tar gzip curl
+            curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+            unzip -qq awscliv2.zip
+            sudo ./aws/install
       - restore_cache:
           keys: [backend-build]
       - attach_workspace:
