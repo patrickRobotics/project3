@@ -317,7 +317,7 @@ jobs:
           at: ~/
       - restore_cache:
           keys: [frontend-build]
-       - run:
+      - run:
           name: Create the  .env file
           command: |
             cd backend
