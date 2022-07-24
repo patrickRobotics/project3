@@ -313,6 +313,8 @@ jobs:
       - install_ansible
       - add_ssh_keys:
           fingerprints: ["c1:a0:2d:dc:64:8f:73:6f:a0:c4:60:16:d3:d5:d1:77"]
+      - restore_cache:
+          keys: [frontend-build]
       - attach_workspace:
           at: ~/
       - run:
