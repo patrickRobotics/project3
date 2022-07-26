@@ -480,8 +480,8 @@ workflows:
       #     requires: [add-prometheus-node-exporter]
       # - run-migrations:
       #     requires: [configure-infrastructure]
-      # - deploy-frontend:
-      #     requires: [run-migrations]
+      - deploy-frontend:
+          requires: [run-migrations]
       - deploy-backend:
           requires: [test-backend]
       # - smoke-test:
